@@ -1,0 +1,240 @@
+{
+  "entities": {
+    "booking": {
+      "title": "Booking",
+      "description": "On-site IT support and network service appointment",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Authenticated user UID or guest identifier"
+        },
+        "userEmail": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Contact email address"
+        },
+        "userName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Contact person name"
+        },
+        "userPhone": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Contact phone number"
+        },
+        "companyName": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Client company or organization name"
+        },
+        "serviceCategory": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Category of IT support required"
+        },
+        "urgency": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Urgency tier: emergency_2hr, standard, scheduled"
+        },
+        "osEnvironment": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Target OS / VM environment"
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Appointment date YYYY-MM-DD"
+        },
+        "timeSlot": {
+          "type": "string",
+          "maxLength": 30,
+          "description": "Selected time slot e.g. 10:30 - 12:00"
+        },
+        "locationAddress": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "On-site physical address"
+        },
+        "detailAddress": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Building/Floor/Unit number"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Detailed description of the issue or project"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "confirmed", "in_progress", "completed", "cancelled"],
+          "description": "Current status of the service booking"
+        },
+        "assignedEngineer": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Name of the dispatched IT engineer"
+        },
+        "estimatedCost": {
+          "type": "number",
+          "description": "Estimated cost in KRW / USD"
+        },
+        "resolutionNotes": {
+          "type": "string",
+          "maxLength": 3000,
+          "description": "Field engineer resolution report"
+        },
+        "isPaid": {
+          "type": "boolean",
+          "description": "Payment status"
+        },
+        "invoiceNumber": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Receipt/Invoice identifier"
+        },
+        "googleCalendarSynced": {
+          "type": "boolean",
+          "description": "Google Calendar sync status"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or server timestamp string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp or server timestamp string"
+        }
+      },
+      "required": [
+        "userName",
+        "userEmail",
+        "serviceCategory",
+        "date",
+        "timeSlot",
+        "locationAddress",
+        "status"
+      ]
+    },
+    "customer": {
+      "title": "Customer",
+      "description": "Customer IT profile and CRM infrastructure details",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "companyName": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "role": {
+          "type": "string",
+          "enum": ["customer", "admin"]
+        },
+        "networkEquipment": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "staticIpRange": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "firewallModel": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "backupSchedule": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "specialNotes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "internalCrmNotes": {
+          "type": "string",
+          "maxLength": 3000
+        },
+        "totalBookings": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "name"]
+    },
+    "adminNotification": {
+      "title": "AdminNotification",
+      "description": "System and booking alerts for administrators",
+      "type": "object",
+      "properties": {
+        "bookingId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "type": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["title", "message", "type", "read"]
+    }
+  },
+  "firestore": {
+    "/bookings/{bookingId}": {
+      "schema": {
+        "$ref": "#/entities/booking"
+      },
+      "description": "Collection of all on-site service appointments"
+    },
+    "/customers/{customerId}": {
+      "schema": {
+        "$ref": "#/entities/customer"
+      },
+      "description": "Client profile, IT environment, and CRM record"
+    },
+    "/adminNotifications/{notificationId}": {
+      "schema": {
+        "$ref": "#/entities/adminNotification"
+      },
+      "description": "Admin real-time notification alerts"
+    }
+  }
+}

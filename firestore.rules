@@ -1,0 +1,126 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'peter.lee108@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Test connection doc per Firebase integration guidelines
+    match /test/connection {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admins collection for role lookup
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Bookings collection
+    match /bookings/{bookingId} {
+      function isValidBooking(data) {
+        return data.userName is string && data.userName.size() > 0 && data.userName.size() <= 100
+          && data.userEmail is string && data.userEmail.size() > 0 && data.userEmail.size() <= 150
+          && data.serviceCategory is string && data.serviceCategory.size() <= 60
+          && data.date is string && data.date.size() <= 20
+          && data.timeSlot is string && data.timeSlot.size() <= 30
+          && data.locationAddress is string && data.locationAddress.size() <= 300
+          && data.status in ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
+      }
+
+      allow get: if isValidId(bookingId) && (
+        isAdmin() ||
+        (isSignedIn() && resource.data.userId == request.auth.uid) ||
+        // Allow unauthenticated checking with doc ID if created as guest
+        (!isSignedIn() && resource.data.userId == 'guest')
+      );
+
+      allow list: if isAdmin() || (
+        isSignedIn() && resource.data.userId == request.auth.uid
+      );
+
+      allow create: if isValidId(bookingId) && isValidBooking(incoming()) && (
+        // Either signed in user matching UID, or guest booking
+        (isSignedIn() && (incoming().userId == request.auth.uid || incoming().userId == 'guest')) ||
+        (!isSignedIn() && incoming().userId == 'guest')
+      );
+
+      allow update: if isValidId(bookingId) && isValidBooking(incoming()) && (
+        isAdmin() || (
+          isSignedIn() &&
+          existing().userId == request.auth.uid &&
+          existing().status != 'completed' &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'description', 'detailAddress', 'updatedAt'])
+        )
+      );
+
+      allow delete: if isValidId(bookingId) && isAdmin();
+    }
+
+    // Customers collection (CRM & Infrastructure profiles)
+    match /customers/{customerId} {
+      function isValidCustomer(data) {
+        return data.email is string && data.email.size() <= 150
+          && data.name is string && data.name.size() <= 100;
+      }
+
+      allow get: if isValidId(customerId) && (
+        isAdmin() || (isSignedIn() && customerId == request.auth.uid)
+      );
+
+      allow list: if isAdmin();
+
+      allow create: if isValidId(customerId) && isValidCustomer(incoming()) && (
+        isAdmin() || (isSignedIn() && customerId == request.auth.uid)
+      );
+
+      allow update: if isValidId(customerId) && isValidCustomer(incoming()) && (
+        isAdmin() || (
+          isSignedIn() &&
+          customerId == request.auth.uid &&
+          !incoming().diff(existing()).affectedKeys().hasAny(['role', 'internalCrmNotes'])
+        )
+      );
+
+      allow delete: if isValidId(customerId) && isAdmin();
+    }
+
+    // Admin notifications
+    match /adminNotifications/{notificationId} {
+      allow read: if isAdmin();
+      allow create: if isValidId(notificationId) && incoming().title is string && incoming().title.size() <= 150;
+      allow update, delete: if isValidId(notificationId) && isAdmin();
+    }
+  }
+}

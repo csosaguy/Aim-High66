@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#071b38" stop-opacity="0.85"/>
+      <stop offset="45%" stop-color="#040d1e" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#020611" stop-opacity="1"/>
+    </radialGradient>
+
+    <!-- Cyan Glow -->
+    <radialGradient id="cyanAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.35"/>
+      <stop offset="40%" stop-color="#0072ff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#00112c" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="badgeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.4"/>
+      <stop offset="70%" stop-color="#0055ff" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Circuit Line Gradients -->
+    <linearGradient id="lineGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#0099ff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0055ff" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <linearGradient id="lineGradRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#0099ff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0055ff" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <!-- Filter for Glow effect -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="intenseGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur1" />
+      <feGaussianBlur stdDeviation="4" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur1" />
+        <feMergeNode in="blur2" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Deep Background -->
+  <rect width="1920" height="1080" fill="url(#bgGrad)" />
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="960" cy="350" r="600" fill="url(#cyanAura)" />
+  <circle cx="1600" cy="280" r="380" fill="url(#badgeGlow)" />
+  <circle cx="300" cy="400" r="350" fill="url(#cyanAura)" opacity="0.6"/>
+
+  <!-- Subtle Cyber Tech Grid -->
+  <g opacity="0.08" stroke="#38bdf8" stroke-width="1">
+    <line x1="0" y1="180" x2="1920" y2="180" />
+    <line x1="0" y1="360" x2="1920" y2="360" />
+    <line x1="0" y1="540" x2="1920" y2="540" />
+    <line x1="0" y1="720" x2="1920" y2="720" />
+    <line x1="0" y1="900" x2="1920" y2="900" />
+    <line x1="240" y1="0" x2="240" y2="1080" />
+    <line x1="480" y1="0" x2="480" y2="1080" />
+    <line x1="720" y1="0" x2="720" y2="1080" />
+    <line x1="960" y1="0" x2="960" y2="1080" />
+    <line x1="1200" y1="0" x2="1200" y2="1080" />
+    <line x1="1440" y1="0" x2="1440" y2="1080" />
+    <line x1="1680" y1="0" x2="1680" y2="1080" />
+  </g>
+
+  <!-- Left Circuit Board Patterns (inspired by poster) -->
+  <g filter="url(#glow)">
+    <!-- Main bus line 1 -->
+    <path d="M 0 60 L 140 60 L 280 200 L 280 420 L 360 500 L 440 500" fill="none" stroke="url(#lineGradLeft)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="440" cy="500" r="5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+    <circle cx="280" cy="200" r="3" fill="#38bdf8"/>
+
+    <!-- Main bus line 2 -->
+    <path d="M 0 140 L 90 140 L 220 270 L 220 540 L 320 640 L 320 800" fill="none" stroke="url(#lineGradLeft)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="320" cy="800" r="4.5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+    
+    <!-- Secondary circuit branches -->
+    <path d="M 0 240 L 120 240 L 180 300 L 180 460 L 130 510 L 130 650 L 220 740 L 220 860" fill="none" stroke="#00d8f6" stroke-width="2" opacity="0.8" stroke-linecap="round"/>
+    <circle cx="220" cy="860" r="4" fill="#00f2fe"/>
+    
+    <path d="M 50 0 L 50 90 L 150 190 L 150 360 L 90 420 L 90 600" fill="none" stroke="#0284c7" stroke-width="2" opacity="0.6"/>
+    <circle cx="90" cy="600" r="3" fill="#38bdf8"/>
+
+    <path d="M 280 280 L 360 280 L 420 340 L 520 340" fill="none" stroke="#00f2fe" stroke-width="2" opacity="0.7"/>
+    <circle cx="520" cy="340" r="4.5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+
+    <path d="M 0 450 L 80 450 L 160 530 L 160 700 L 260 800 L 400 800" fill="none" stroke="url(#lineGradLeft)" stroke-width="2.5"/>
+    <circle cx="400" cy="800" r="5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+  </g>
+
+  <!-- Right Circuit Board Patterns (inspired by poster) -->
+  <g filter="url(#glow)">
+    <!-- Main bus line right 1 -->
+    <path d="M 1920 60 L 1780 60 L 1640 200 L 1640 420 L 1560 500 L 1480 500" fill="none" stroke="url(#lineGradRight)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="1480" cy="500" r="5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+    <circle cx="1640" cy="200" r="3" fill="#38bdf8"/>
+
+    <!-- Main bus line right 2 -->
+    <path d="M 1920 140 L 1830 140 L 1700 270 L 1700 540 L 1600 640 L 1600 800" fill="none" stroke="url(#lineGradRight)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="1600" cy="800" r="4.5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+
+    <!-- Secondary circuit branches right -->
+    <path d="M 1920 240 L 1800 240 L 1740 300 L 1740 460 L 1790 510 L 1790 650 L 1700 740 L 1700 860" fill="none" stroke="#00d8f6" stroke-width="2" opacity="0.8" stroke-linecap="round"/>
+    <circle cx="1700" cy="860" r="4" fill="#00f2fe"/>
+
+    <path d="M 1870 0 L 1870 90 L 1770 190 L 1770 360 L 1830 420 L 1830 600" fill="none" stroke="#0284c7" stroke-width="2" opacity="0.6"/>
+    <circle cx="1830" cy="600" r="3" fill="#38bdf8"/>
+
+    <path d="M 1640 280 L 1560 280 L 1500 340 L 1400 340" fill="none" stroke="#00f2fe" stroke-width="2" opacity="0.7"/>
+    <circle cx="1400" cy="340" r="4.5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+
+    <path d="M 1920 450 L 1840 450 L 1760 530 L 1760 700 L 1660 800 L 1520 800" fill="none" stroke="url(#lineGradRight)" stroke-width="2.5"/>
+    <circle cx="1520" cy="800" r="5" fill="#00f2fe" filter="url(#intenseGlow)"/>
+  </g>
+
+  <!-- Glowing On-Site Tech Ring Motif (Upper Right Halo from uploaded poster) -->
+  <g transform="translate(1580, 240)" filter="url(#glow)">
+    <circle cx="0" cy="0" r="95" fill="none" stroke="#00f2fe" stroke-width="3" stroke-dasharray="14 8" opacity="0.85"/>
+    <circle cx="0" cy="0" r="82" fill="#071d42" fill-opacity="0.7" stroke="#00d8f6" stroke-width="2"/>
+    <circle cx="0" cy="0" r="70" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6"/>
+    
+    <!-- Stylized Wi-Fi waves inside circular badge -->
+    <path d="M -30 -10 A 42 42 0 0 1 30 -10" fill="none" stroke="#00f2fe" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M -20 5 A 28 28 0 0 1 20 5" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+    <path d="M -10 18 A 14 14 0 0 1 10 18" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="0" cy="28" r="4" fill="#00f2fe" filter="url(#intenseGlow)"/>
+  </g>
+
+  <!-- Floating IT Pulse Dots across center -->
+  <g filter="url(#intenseGlow)">
+    <circle cx="680" cy="220" r="3" fill="#00f2fe" opacity="0.8"/>
+    <circle cx="840" cy="180" r="2.5" fill="#38bdf8" opacity="0.7"/>
+    <circle cx="1080" cy="200" r="3" fill="#00f2fe" opacity="0.8"/>
+    <circle cx="1260" cy="260" r="2" fill="#7dd3fc" opacity="0.6"/>
+    <circle cx="620" cy="720" r="2.5" fill="#00f2fe" opacity="0.6"/>
+    <circle cx="1320" cy="680" r="3" fill="#00f2fe" opacity="0.7"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+{
+  "name": "Elite IT Support Specialists",
+  "description": "Seamless IT Support & Network Design, Right at Your Doorstep. 직관적인 방문 예약 시스템과 통합 고객 관리 기능을 갖춘 엔터프라이즈 IT 지원 플랫폼.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
