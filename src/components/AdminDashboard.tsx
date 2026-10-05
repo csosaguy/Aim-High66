@@ -132,9 +132,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <h2 className="text-base sm:text-lg font-bold text-white">
                   엔터프라이즈 통합 관리자 관제센터 & CRM
                 </h2>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded">
-                  ADMIN CONSOLE
-                </span>
               </div>
               <p className="text-xs text-slate-400">
                 실시간 예약 알림, 캘린더/테이블 뷰어, 현장 엔지니어 배정, 고객사 인프라 관리

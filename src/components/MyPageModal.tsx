@@ -90,9 +90,6 @@ export const MyPageModal: React.FC<MyPageModalProps> = ({
                 <h2 className="text-base sm:text-lg font-bold text-white">
                   {customerProfile?.companyName || '고객 전용 My Page'}
                 </h2>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  {customerProfile?.name || '기업 회원'}
-                </span>
               </div>
               <p className="text-xs text-slate-400">
                 과거 및 진행 중인 기술지원 내역, 전자 결제 영수증, 등록된 IT 인프라 환경
