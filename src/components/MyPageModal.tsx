@@ -13,7 +13,8 @@ import {
   ShieldCheck, 
   ExternalLink,
   ChevronRight,
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { Booking, CustomerProfile } from '../types';
 
@@ -25,6 +26,7 @@ interface MyPageModalProps {
   onOpenBooking: () => void;
   onViewReceipt: (booking: Booking) => void;
   onViewReport: (booking: Booking) => void;
+  onDeleteBooking?: (bookingId: string) => void;
 }
 
 export const MyPageModal: React.FC<MyPageModalProps> = ({
@@ -35,6 +37,7 @@ export const MyPageModal: React.FC<MyPageModalProps> = ({
   onOpenBooking,
   onViewReceipt,
   onViewReport,
+  onDeleteBooking,
 }) => {
   const [activeTab, setActiveTab] = useState<'bookings' | 'infra' | 'receipts'>('bookings');
 
@@ -229,6 +232,20 @@ export const MyPageModal: React.FC<MyPageModalProps> = ({
                           >
                             <Receipt className="w-3 h-3 text-blue-400" />
                             <span>영수증 보기</span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              if (confirm(`'${booking.companyName}'의 예약 내역(${booking.invoiceNumber})을 정말 삭제하시겠습니까?`)) {
+                                if (onDeleteBooking) {
+                                  onDeleteBooking(booking.id);
+                                }
+                              }
+                            }}
+                            className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/80 text-rose-400 hover:text-white border border-rose-800/40 transition-colors cursor-pointer"
+                            title="예약 내역 삭제"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>

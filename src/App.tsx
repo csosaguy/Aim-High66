@@ -23,7 +23,7 @@ import {
   updateBookingStatusDoc, 
   saveCustomerProfileDoc 
 } from './firebase';
-import { Booking, CustomerProfile, AdminNotification, ServiceCategory } from './types';
+import { Booking, CustomerProfile, AdminNotification, ServiceCategory, AuthUser } from './types';
 import { 
   INITIAL_BOOKINGS, 
   INITIAL_CUSTOMERS, 
@@ -42,15 +42,17 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { SystemArchitectureModal } from './components/SystemArchitectureModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { ResolutionReportModal } from './components/ResolutionReportModal';
+import { LoginModal } from './components/LoginModal';
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | AuthUser | null>(null);
   const [isDemoAdmin, setIsDemoAdmin] = useState<boolean>(true); // Default to admin for seamless evaluation
   const [bookings, setBookings] = useState<Booking[]>(INITIAL_BOOKINGS);
   const [customers, setCustomers] = useState<CustomerProfile[]>(INITIAL_CUSTOMERS);
   const [notifications, setNotifications] = useState<AdminNotification[]>(INITIAL_NOTIFICATIONS);
 
   // Modals state
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -61,14 +63,38 @@ export default function App() {
   // Pre-selected category if user clicks from services grid
   const [initialBookingCategory, setInitialBookingCategory] = useState<ServiceCategory>('network_down');
 
-  // 1. Initial connection test and Auth listener
+  // 1. Initial connection test, localStorage restore, and Auth listener
   useEffect(() => {
     testConnection();
 
+    // Check localStorage cache first for fast offline/deployed auth restore
+    try {
+      const cached = localStorage.getItem('it_support_auth_user');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setCurrentUser(parsed);
+        if (parsed.isAdmin || parsed.email === 'peter.lee108@gmail.com') {
+          setIsDemoAdmin(true);
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
       if (user) {
-        // If user is peter.lee108@gmail.com, mark as master admin
+        setCurrentUser(user);
+        try {
+          localStorage.setItem('it_support_auth_user', JSON.stringify({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            isAdmin: user.email === 'peter.lee108@gmail.com',
+          }));
+        } catch {
+          // ignore
+        }
         if (user.email === 'peter.lee108@gmail.com') {
           setIsDemoAdmin(true);
         }
@@ -133,25 +159,70 @@ export default function App() {
 
   // Handlers
   const handleGoogleLogin = async () => {
+    const user = await loginWithGoogle();
+    if (user) {
+      setCurrentUser(user);
+      try {
+        localStorage.setItem('it_support_auth_user', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          isAdmin: user.email === 'peter.lee108@gmail.com',
+        }));
+      } catch {
+        // ignore
+      }
+      if (user.email === 'peter.lee108@gmail.com') {
+        setIsDemoAdmin(true);
+      }
+    }
+  };
+
+  const handleDirectLogin = (user: AuthUser, isAdminRole?: boolean) => {
+    setCurrentUser(user);
+    const admin = isAdminRole || user.email === 'peter.lee108@gmail.com';
+    setIsDemoAdmin(admin);
     try {
-      await loginWithGoogle();
-    } catch (err) {
-      alert('Google 로그인 팝업이 차단되었거나 취소되었습니다. 1-Click 테스트 로그인을 이용하실 수 있습니다.');
+      localStorage.setItem('it_support_auth_user', JSON.stringify({
+        ...user,
+        isAdmin: admin,
+      }));
+    } catch {
+      // ignore
     }
   };
 
   const handleLogout = async () => {
-    await logoutUser();
+    try {
+      await logoutUser();
+    } catch {
+      // ignore
+    }
+    setCurrentUser(null);
     setIsDemoAdmin(false);
+    try {
+      localStorage.removeItem('it_support_auth_user');
+    } catch {
+      // ignore
+    }
   };
 
   const handleDemoLogin = (role: 'customer' | 'admin') => {
     if (role === 'admin') {
-      setIsDemoAdmin(true);
-      alert('관리자(Admin) 권한으로 전환되었습니다. 실시간 관제 및 CRM 수정이 가능합니다.');
+      handleDirectLogin({
+        uid: 'cust-peter',
+        email: 'peter.lee108@gmail.com',
+        displayName: '이성훈 대표 (관리자)',
+        photoURL: null,
+      }, true);
     } else {
-      setIsDemoAdmin(false);
-      alert('기업 고객(Customer) 모드로 전환되었습니다. 마이페이지에서 예약 내역과 영수증 조회가 가능합니다.');
+      handleDirectLogin({
+        uid: 'user-sample-02',
+        email: 'finance.admin@nexuskr.com',
+        displayName: '김수연 이사 (기업 고객)',
+        photoURL: null,
+      }, false);
     }
   };
 
@@ -262,7 +333,7 @@ export default function App() {
         onOpenMyPage={() => setIsMyPageOpen(true)}
         onOpenAdmin={() => setIsAdminOpen(true)}
         onOpenSystemArch={() => setIsSystemArchOpen(true)}
-        onLogin={handleGoogleLogin}
+        onLogin={() => setIsLoginModalOpen(true)}
         onLogout={handleLogout}
         onDemoLogin={handleDemoLogin}
       />
@@ -316,6 +387,7 @@ export default function App() {
         onOpenBooking={() => setIsBookingOpen(true)}
         onViewReceipt={(booking) => setActiveReceiptBooking(booking)}
         onViewReport={(booking) => setActiveReportBooking(booking)}
+        onDeleteBooking={handleDeleteBooking}
       />
 
       {/* 3. Admin Real-Time Dashboard & CRM */}
@@ -350,6 +422,14 @@ export default function App() {
       <ResolutionReportModal
         booking={activeReportBooking}
         onClose={() => setActiveReportBooking(null)}
+      />
+
+      {/* 7. Dedicated Login & Authentication Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onGoogleLogin={handleGoogleLogin}
+        onDirectLogin={handleDirectLogin}
       />
     </div>
   );
